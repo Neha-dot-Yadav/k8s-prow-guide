@@ -32,7 +32,7 @@ metadata:
   namespace: default
   name: job-config
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: prowjobs.prow.k8s.io
@@ -82,46 +82,9 @@ spec:
                   - "aborted"
           - required:
             - completionTime
-  additionalPrinterColumns:
-  - name: Job
-    type: string
-    description: The name of the job being run.
-    JSONPath: .spec.job
-  - name: BuildId
-    type: string
-    description: The ID of the job being run.
-    JSONPath: .status.build_id
-  - name: Type
-    type: string
-    description: The type of job being run.
-    JSONPath: .spec.type
-  - name: Org
-    type: string
-    description: The org for which the job is running.
-    JSONPath: .spec.refs.org
-  - name: Repo
-    type: string
-    description: The repo for which the job is running.
-    JSONPath: .spec.refs.repo
-  - name: Pulls
-    type: string
-    description: The pulls for which the job is running.
-    JSONPath: ".spec.refs.pulls[*].number"
-  - name: StartTime
-    type: date
-    description: When the job started running.
-    JSONPath: .status.startTime
-  - name: CompletionTime
-    type: date
-    description: When the job finished running.
-    JSONPath: .status.completionTime
-  - name: State
-    description: The state of the job.
-    name: state
-    type: string
-    JSONPath: .status.state
+  
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -210,7 +173,7 @@ spec:
     nodePort: 30488
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -253,7 +216,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -288,7 +251,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -368,7 +331,7 @@ spec:
     nodePort: 32710
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -406,7 +369,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -465,7 +428,7 @@ spec:
     targetPort: 8888
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Ingress
 metadata:
   namespace: default
@@ -490,7 +453,7 @@ metadata:
   name: "deck"
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "deck"
@@ -503,7 +466,7 @@ subjects:
   name: "deck"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "deck"
@@ -529,7 +492,7 @@ metadata:
   name: "horologium"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "horologium"
@@ -543,7 +506,7 @@ rules:
       - list
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "horologium"
@@ -562,7 +525,7 @@ metadata:
   name: "plank"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "plank"
@@ -586,7 +549,7 @@ rules:
       - update
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "plank"
@@ -605,7 +568,7 @@ metadata:
   name: "sinker"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "sinker"
@@ -626,7 +589,7 @@ rules:
       - list
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "sinker"
@@ -645,7 +608,7 @@ metadata:
   name: "hook"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "hook"
@@ -665,7 +628,7 @@ rules:
       - update
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "hook"
@@ -684,7 +647,7 @@ metadata:
   name: "tide"
 ---
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "tide"
@@ -698,7 +661,7 @@ rules:
       - list
 ---
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: "tide"
