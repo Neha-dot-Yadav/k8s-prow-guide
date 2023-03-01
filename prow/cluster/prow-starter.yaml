@@ -428,24 +428,6 @@ spec:
     targetPort: 8888
   type: NodePort
 ---
-apiVersion: extensions/v1
-kind: Ingress
-metadata:
-  namespace: default
-  name: ing
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /* # Correct for GKE, need / on many other distros
-        backend:
-          serviceName: deck
-          servicePort: 80
-      - path: /hook
-        backend:
-          serviceName: hook
-          servicePort: 8888
----
 kind: ServiceAccount
 apiVersion: v1
 metadata:
