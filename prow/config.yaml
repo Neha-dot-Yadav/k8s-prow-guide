@@ -31,9 +31,9 @@ sinker:
 tide:
   queries:
   - orgs:
-    - sanster23
+    - Neha-dot-Yadav
   - repos:
-    - sanster23/k8s-prow-guide
+    - Neha-dot-Yadav/k8s-prow-guide
     labels:
     - lgtm
     - approved

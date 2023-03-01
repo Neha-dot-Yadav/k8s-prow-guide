@@ -7,7 +7,7 @@ branch_spec: &branch_spec
 
 # Presubmit jobs
 presubmits:
-  sanster23/k8s-prow-guide:
+  Neha-dot-Yadav/k8s-prow-guide:
   - name: pull-job
     always_run: true
     decorate: true
