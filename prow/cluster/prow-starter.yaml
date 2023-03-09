@@ -1,6 +1,3 @@
-# This file contains Kubernetes YAML files for the most important prow
-# components. Don't edit resources in this file. Instead, pull them out into
-# their own files.
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -82,9 +79,46 @@ spec:
                   - "aborted"
           - required:
             - completionTime
-  
+  additionalPrinterColumns:
+  - name: Job
+    type: string
+    description: The name of the job being run.
+    JSONPath: .spec.job
+  - name: BuildId
+    type: string
+    description: The ID of the job being run.
+    JSONPath: .status.build_id
+  - name: Type
+    type: string
+    description: The type of job being run.
+    JSONPath: .spec.type
+  - name: Org
+    type: string
+    description: The org for which the job is running.
+    JSONPath: .spec.refs.org
+  - name: Repo
+    type: string
+    description: The repo for which the job is running.
+    JSONPath: .spec.refs.repo
+  - name: Pulls
+    type: string
+    description: The pulls for which the job is running.
+    JSONPath: ".spec.refs.pulls[*].number"
+  - name: StartTime
+    type: date
+    description: When the job started running.
+    JSONPath: .status.startTime
+  - name: CompletionTime
+    type: date
+    description: When the job finished running.
+    JSONPath: .status.completionTime
+  - name: State
+    description: The state of the job.
+    name: state
+    type: string
+    JSONPath: .status.state
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -92,6 +126,9 @@ metadata:
   labels:
     app: hook
 spec:
+  selector:
+    matchLabels:
+      app: hook
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -103,6 +140,7 @@ spec:
       labels:
         app: hook
     spec:
+      serviceAccountName: hook
       terminationGracePeriodSeconds: 180
       containers:
       - name: hook
@@ -173,7 +211,7 @@ spec:
     nodePort: 30488
   type: NodePort
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -181,6 +219,9 @@ metadata:
   labels:
     app: plank
 spec:
+  selector:
+    matchLabels:
+      app: plank
   replicas: 1 # Do not scale up.
   strategy:
     type: Recreate
@@ -189,6 +230,7 @@ spec:
       labels:
         app: plank
     spec:
+      serviceAccountName: plank
       containers:
       - name: plank
         image: gcr.io/k8s-prow/plank:v20190405-651ad49e6
@@ -216,7 +258,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -224,12 +266,16 @@ metadata:
   labels:
     app: sinker
 spec:
+  selector:
+    matchLabels:
+      app: sinker
   replicas: 1
   template:
     metadata:
       labels:
         app: sinker
     spec:
+      serviceAccountName: sinker
       containers:
       - name: sinker
         image: gcr.io/k8s-prow/sinker:v20190405-651ad49e6
@@ -251,7 +297,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -259,6 +305,9 @@ metadata:
   labels:
     app: deck
 spec:
+  selector:
+    matchLabels:
+      app: deck
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -270,6 +319,7 @@ spec:
       labels:
         app: deck
     spec:
+      serviceAccountName: deck
       terminationGracePeriodSeconds: 30
       containers:
       - name: deck
@@ -279,7 +329,6 @@ spec:
           - --hook-url=http://hook:8888/plugin-help
           - --job-config-path=/etc/job-config
           - --spyglass=true
-          - --gcs-credentials-file=/etc/github/service-account.json
         ports:
           - name: http
             containerPort: 8080
@@ -290,9 +339,6 @@ spec:
         - name: job-config
           mountPath: /etc/job-config
           readOnly: true
-        - name: gcs-creds
-          mountPath: /etc/github
-          readOnly: true          
         livenessProbe:
           httpGet:
             path: /healthz
@@ -313,9 +359,6 @@ spec:
       - name: job-config
         configMap:
           name: job-config
-      - name: gcs-creds
-        secret:
-          secretName: gcs-sa
 ---
 apiVersion: v1
 kind: Service
@@ -331,7 +374,7 @@ spec:
     nodePort: 32710
   type: NodePort
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -339,6 +382,9 @@ metadata:
   labels:
     app: horologium
 spec:
+  selector:
+    matchLabels:
+      app: horologium
   replicas: 1 # Do not scale up.
   strategy:
     type: Recreate
@@ -347,6 +393,7 @@ spec:
       labels:
         app: horologium
     spec:
+      serviceAccountName: horologium
       terminationGracePeriodSeconds: 30
       containers:
       - name: horologium
@@ -369,7 +416,7 @@ spec:
         configMap:
           name: job-config
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: default
@@ -377,6 +424,9 @@ metadata:
   labels:
     app: tide
 spec:
+  selector:
+    matchLabels:
+      app: tide
   replicas: 1 # Do not scale up.
   strategy:
     type: Recreate
@@ -385,6 +435,7 @@ spec:
       labels:
         app: tide
     spec:
+      serviceAccountName: tide
       containers:
       - name: tide
         image: gcr.io/k8s-prow/tide:v20190405-651ad49e6
@@ -428,7 +479,7 @@ spec:
     targetPort: 8888
   type: NodePort
 ---
-apiVersion: extensions/v1
+apiVersion: apps/v1
 kind: Ingress
 metadata:
   namespace: default
